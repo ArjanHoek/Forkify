@@ -1,0 +1,26 @@
+{
+  "name": "forkify",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArjanHoek/Forkify.git"
+  },
+  "keywords": [],
+  "author": "Arjan Hoek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArjanHoek/Forkify/issues"
+  },
+  "homepage": "https://github.com/ArjanHoek/Forkify#readme",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.4.1",
+    "parcel": "^2.4.1",
+    "sass": "^1.49.11"
+  }
+}
