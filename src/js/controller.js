@@ -1,11 +1,8 @@
 import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 
-import icons from 'url:../img/icons.svg';
 import 'core-js/stable';
 import 'regenerator-runtime';
-
-const recipeContainer = document.querySelector('.recipe');
 
 // https://forkify-api.herokuapp.com/v2
 
@@ -25,7 +22,7 @@ const controlRecipes = async function () {
     // Rendering recipe
     recipeView.render(model.state.recipe);
   } catch (err) {
-    console.log(err);
+    recipeView.renderError();
   }
 };
 
