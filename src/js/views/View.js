@@ -4,8 +4,6 @@ export default class View {
   _data;
 
   render(data) {
-    console.log(data);
-
     if (!data || (Array.isArray(data) && !data.length))
       return this.renderError();
 
@@ -15,6 +13,35 @@ export default class View {
     this._clear();
 
     this._parentEl.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  update(data) {
+    this._data = data;
+
+    const newMarkup = this._generateMarkup();
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+
+    const newElements = Array.from(newDOM.querySelectorAll('*'));
+    const curElements = Array.from(this._parentEl.querySelectorAll('*'));
+
+    newElements.forEach((newEl, index) => {
+      const curEl = curElements[index];
+      const hasChanged = !newEl.isEqualNode(curEl);
+
+      if (hasChanged) {
+        const hasTextContent = newEl.firstChild?.nodeValue.trim() !== '';
+
+        if (hasTextContent) {
+          curEl.textContent = newEl.textContent;
+        }
+
+        const attritubes = Array.from(newEl.attributes);
+
+        attritubes.forEach(attr => {
+          curEl.setAttribute(attr.name, attr.value);
+        });
+      }
+    });
   }
 
   _clear() {
