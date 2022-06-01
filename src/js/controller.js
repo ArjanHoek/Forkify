@@ -47,8 +47,14 @@ const controlSearchResults = async function () {
   }
 };
 
+const controlServings = function (servings) {
+  model.updateServings(servings);
+  recipeView.render(model.state.recipe);
+};
+
 const init = () => {
   recipeView.addHandlerRender(controlRecipes);
+  recipeView.addHandlerServings(controlServings);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
 };
