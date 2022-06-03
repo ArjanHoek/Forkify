@@ -6,6 +6,7 @@ import paginationView from './views/paginationView.js';
 
 import 'core-js/stable';
 import 'regenerator-runtime';
+import bookmarksView from './views/bookmarksView.js';
 
 const controlRecipes = async function () {
   try {
@@ -22,6 +23,7 @@ const controlRecipes = async function () {
 
     // Rendering recipe
     recipeView.render(model.state.recipe);
+    bookmarksView.update(model.state.bookmarks);
   } catch (err) {
     recipeView.renderError();
   }
@@ -57,6 +59,7 @@ const controlServings = function (servings) {
 const controlToggleBookmark = function () {
   model.toggleBookmark(model.state.recipe);
   recipeView.update(model.state.recipe);
+  bookmarksView.render(model.state.bookmarks);
 };
 
 const init = () => {
