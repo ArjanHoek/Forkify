@@ -54,9 +54,15 @@ const controlServings = function (servings) {
   recipeView.update(model.state.recipe);
 };
 
+const controlToggleBookmark = function () {
+  model.toggleBookmark(model.state.recipe);
+  recipeView.update(model.state.recipe);
+};
+
 const init = () => {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerServings(controlServings);
+  recipeView.addHandlerToggleBookmark(controlToggleBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
 };
