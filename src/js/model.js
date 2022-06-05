@@ -1,5 +1,5 @@
-import { API_URL, RES_PER_PAGE } from './config.js';
-import { getJSON } from './helpers.js';
+import { API_KEY, API_URL, RES_PER_PAGE } from './config.js';
+import { getJSON, sendJSON } from './helpers.js';
 
 export const state = {
   recipe: {},
@@ -12,27 +12,30 @@ export const state = {
   bookmarks: [],
 };
 
+const createRecipeObject = function (data) {
+  const { recipe } = data.data;
+
+  const bookmarked = state.bookmarks.some(rec => rec.id === recipe.id);
+
+  return {
+    id: recipe.id,
+    title: recipe.title,
+    publisher: recipe.publisher,
+    sourceUrl: recipe.source_url,
+    image: recipe.image_url,
+    servings: recipe.servings,
+    cookingTime: recipe.cooking_time,
+    ingredients: recipe.ingredients,
+    bookmarked,
+    ...(recipe.key && { key: recipe.key }),
+  };
+};
+
 export const loadRecipe = async function (id) {
   try {
     const data = await getJSON(`${API_URL}${id}`);
 
-    const { recipe } = data.data;
-
-    const bookmarked = state.bookmarks.some(rec => rec.id === id);
-
-    state.recipe = {
-      id: recipe.id,
-      title: recipe.title,
-      publisher: recipe.publisher,
-      sourceUrl: recipe.source_url,
-      image: recipe.image_url,
-      servings: recipe.servings,
-      cookingTime: recipe.cooking_time,
-      ingredients: recipe.ingredients,
-      bookmarked,
-    };
-
-    console.log(state.recipe);
+    state.recipe = createRecipeObject(data);
   } catch (err) {
     throw err;
   }
@@ -112,4 +115,51 @@ export const toggleBookmark = function (recipe) {
   persistBookmarks();
 };
 
-export const test = '';
+const convertIngredient = function (val) {
+  const ingArray = val.replaceAll(' ', '').split(',');
+
+  if (ingArray.length !== 3)
+    throw new Error(
+      'Wrong ingredient format! Please use the correct format :)'
+    );
+
+  const [quantity, unit, description] = ingArray;
+  return { quantity: quantity ? +quantity : null, unit, description };
+};
+
+const getIngredients = function (recipe) {
+  return Object.entries(recipe).reduce((acc, [key, value]) => {
+    if (!key.startsWith('ingredient') || !value) return acc;
+
+    const convertedIngredient = convertIngredient(value);
+
+    if (!convertedIngredient) return acc;
+
+    return acc.concat(convertIngredient(value));
+  }, []);
+};
+
+export const uploadRecipe = async function (recipe) {
+  try {
+    const ingredients = getIngredients(recipe);
+
+    const newRecipe = {
+      title: recipe.title,
+      publisher: recipe.publisher,
+      source_url: recipe.sourceUrl,
+      image_url: recipe.image,
+      servings: +recipe.servings,
+      cooking_time: +recipe.cookingTime,
+      ingredients: ingredients,
+    };
+
+    const res = await sendJSON(`${API_URL}?key=${API_KEY}`, newRecipe);
+
+    console.log(res);
+
+    state.recipe = createRecipeObject(res);
+    toggleBookmark(state.recipe);
+  } catch (err) {
+    throw err;
+  }
+};

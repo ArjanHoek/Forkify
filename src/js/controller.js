@@ -8,6 +8,7 @@ import addRecipeView from './views/addRecipeView.js';
 import 'core-js/stable';
 import 'regenerator-runtime';
 import bookmarksView from './views/bookmarksView.js';
+import { MODAL_CLOSE_SECONDS } from './config.js';
 
 const controlRecipes = async function () {
   try {
@@ -69,8 +70,22 @@ const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
-const controlAddRecipe = function (data) {
-  console.log(data);
+const controlAddRecipe = async function (data) {
+  try {
+    addRecipeView.renderSpinner();
+
+    await model.uploadRecipe(data);
+
+    recipeView.render(model.state.recipe);
+    bookmarksView.render(model.state.bookmarks);
+    addRecipeView.renderMessage();
+
+    setTimeout(() => {
+      addRecipeView.toggleWindow();
+    }, MODAL_CLOSE_SECONDS * 1000);
+  } catch (err) {
+    addRecipeView.renderError(err.message);
+  }
 };
 
 const init = () => {
