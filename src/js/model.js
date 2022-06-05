@@ -31,6 +31,8 @@ export const loadRecipe = async function (id) {
       ingredients: recipe.ingredients,
       bookmarked,
     };
+
+    console.log(state.recipe);
   } catch (err) {
     throw err;
   }
@@ -76,6 +78,18 @@ export const updateServings = function (servings) {
   state.recipe.servings = servings;
 };
 
+const persistBookmarks = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
+export const importBookmarks = function () {
+  const bookmarks = localStorage.getItem('bookmarks');
+
+  if (!bookmarks) return;
+
+  state.bookmarks = JSON.parse(bookmarks);
+};
+
 export const toggleBookmark = function (recipe) {
   const added = state.bookmarks.some(bookmark => bookmark.id === recipe.id);
 
@@ -94,4 +108,6 @@ export const toggleBookmark = function (recipe) {
       state.recipe.bookmarked = true;
     }
   }
+
+  persistBookmarks();
 };
