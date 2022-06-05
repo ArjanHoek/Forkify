@@ -111,3 +111,5 @@ export const toggleBookmark = function (recipe) {
 
   persistBookmarks();
 };
+
+export const test = '';
