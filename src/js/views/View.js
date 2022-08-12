@@ -3,8 +3,13 @@ import icons from 'url:../../img/icons.svg';
 export default class View {
   _data;
 
+  /**
+   * Render the received object to the DOM
+   * @param {Object | Object[]} data The data to be rendered
+   * @returns {undefined}
+   * @this {Object} View instance
+   */
   render(data) {
-    console.log(data);
     if (!data || (Array.isArray(data) && !data.length))
       return this.renderError();
 

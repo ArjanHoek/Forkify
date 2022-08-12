@@ -1,5 +1,5 @@
 import { API_KEY, API_URL, RES_PER_PAGE } from './config.js';
-import { getJSON, sendJSON } from './helpers.js';
+import { AJAX } from './helpers.js';
 
 export const state = {
   recipe: {},
@@ -33,7 +33,7 @@ const createRecipeObject = function (data) {
 
 export const loadRecipe = async function (id) {
   try {
-    const data = await getJSON(`${API_URL}${id}`);
+    const data = await AJAX(`${API_URL}${id}?key=${API_KEY}`);
 
     state.recipe = createRecipeObject(data);
   } catch (err) {
@@ -45,7 +45,7 @@ export const loadSearchResults = async query => {
   try {
     state.search.query = query;
 
-    const data = await getJSON(`${API_URL}?search=${query}`);
+    const data = await AJAX(`${API_URL}?search=${query}&key=${API_KEY}`);
 
     state.search.results = data.data.recipes.map(rec => {
       return {
@@ -53,6 +53,7 @@ export const loadSearchResults = async query => {
         title: rec.title,
         publisher: rec.publisher,
         image: rec.image_url,
+        ...(rec.key && { key: rec.key }),
       };
     });
 
@@ -116,7 +117,9 @@ export const toggleBookmark = function (recipe) {
 };
 
 const convertIngredient = function (val) {
-  const ingArray = val.replaceAll(' ', '').split(',');
+  console.log(val);
+  // const ingArray = val.replaceAll(' ', '').split(',');
+  const ingArray = val.split(',').map(v => v.trim());
 
   if (ingArray.length !== 3)
     throw new Error(
@@ -153,9 +156,7 @@ export const uploadRecipe = async function (recipe) {
       ingredients: ingredients,
     };
 
-    const res = await sendJSON(`${API_URL}?key=${API_KEY}`, newRecipe);
-
-    console.log(res);
+    const res = await AJAX(`${API_URL}?key=${API_KEY}`, newRecipe);
 
     state.recipe = createRecipeObject(res);
     toggleBookmark(state.recipe);

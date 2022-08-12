@@ -80,6 +80,8 @@ const controlAddRecipe = async function (data) {
     bookmarksView.render(model.state.bookmarks);
     addRecipeView.renderMessage();
 
+    window.history.pushState(null, '', `#${model.state.recipe.id}`);
+
     setTimeout(() => {
       addRecipeView.toggleWindow();
     }, MODAL_CLOSE_SECONDS * 1000);
